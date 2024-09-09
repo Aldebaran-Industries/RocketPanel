@@ -231,8 +231,8 @@ After=network.target
 Type=simple
 User=www-data
 Group=www-data
-WorkingDirectory=/var/www/RocketPanel/Application
-ExecStart=/usr/bin/npm run dev
+WorkingDirectory=/var/www/RocketPanel/
+ExecStart=/usr/bin/npm start
 Restart=always
 Environment=PORT=3000
 
