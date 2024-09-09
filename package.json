@@ -1,0 +1,39 @@
+{
+    "name": "rocketpanel",
+    "version": "0.0.1",
+    "description": "RocketPanel is a simple http web server that allows resellers and clients to host and manage their web applications",
+    "author": "Aldebaran Industries Inc.",
+    "license": "MIT",
+    "scripts": {
+        "start": "nodemon Application/LuckyDuck.js",
+        "dev": "nodemon Application/LuckyDuck.js"
+      },
+    "dependencies": {
+      "argon2": "*",
+      "bcryptjs": "*",
+      "binance-api-node": "*",
+      "body-parser": "*",
+      "compression": "*",
+      "cookie-parser": "*",
+      "debug": "*",
+      "express": "*",
+      "express-rate-limit": "*",
+      "express-session": "*",
+      "jsonwebtoken": "*",
+      "libphonenumber-js": "*",
+      "morgan": "*",
+      "multer": "*",
+      "mysql": "*",
+      "mysql-pool": "*",
+      "nodemon": "*",
+      "passport": "*",
+      "passport-local": "*",
+      "public-ip": "*",
+      "pug": "*",
+      "serve-favicon": "*",
+      "uuid": "*",
+      "winston": "*",
+      "ws": "*",
+      "vhost": "*"
+    }
+  }
