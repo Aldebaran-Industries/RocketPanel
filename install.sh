@@ -235,7 +235,6 @@ WorkingDirectory=/var/www/RocketPanel/Application
 ExecStart=/usr/bin/npm run dev
 Restart=always
 Environment=PORT=3000
-LimitNOFILE=4096
 
 [Install]
 WantedBy=multi-user.target
@@ -243,6 +242,12 @@ EOF
 systemctl daemon-reload
 sudo systemctl enable rocketpanel
 sudo systemctl start rocketpanel
+
+# Delete Default Nginx configuration
+echo "Deleting Default Nginx configuration..."
+sudo rm /etc/nginx/sites-available/default
+sudo rm /etc/nginx/sites-enabled/default
+
 # Configure Nginx to serve a Node.js application
 echo "Configuring RocketPanel"
 sudo chown www-data:www-data /var/www/RocketPanel/Application/RocketPanel.js
@@ -266,6 +271,8 @@ EOF
 
 # Enable and restart Nginx
 echo "Restarting NGINX Server..."
+sudo rm /etc/nginx/sites-enabled/default
+sudo rm /etc/nginx/sites-available/default
 ln -s /etc/nginx/sites-available/RocketPanel /etc/nginx/sites-enabled/
 systemctl restart nginx
 
@@ -290,3 +297,4 @@ systemctl restart nginx
 # sudo certbot register --update-registration --email yournewemail@example.com
 # sudo certbot -a dns-cloudflare -i nginx -d "*.domain.com" -d "*.server.domain.com" --dns-cloudflare-credentials /etc/ssl/cloudflare.ini --dry-run
 
+Set the 'ServerName' directive globally to suppress this message
