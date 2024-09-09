@@ -2,6 +2,8 @@
 
 // Imports
 const express = require('express');
+const compression = require('compression');
+const cookieParser = require('cookie-parser');
 
 // Create a new express app
 const app = express();
