@@ -216,8 +216,8 @@ sudo chmod 640 /var/www/SSL/RocketPanel/localhost.key
 
 
 # Install Node.JS Dependencies
-sudo cd /var/www/RocketPanel
-npm install
+cd /var/www/RocketPanel
+sudo npm install
 
 # Create the Passenger Service and Start RocketPanel
 echo "Create the Passenger Service"
