@@ -284,3 +284,11 @@ sudo chmod +x /var/www/SSL/LetsEncrypt/set-permissions.sh
 
 # sudo certbot register --update-registration --email yournewemail@example.com
 # sudo certbot -a dns-cloudflare -i nginx -d "*.domain.com" -d "*.server.domain.com" --dns-cloudflare-credentials /etc/ssl/cloudflare.ini --dry-run
+
+cat <<EOF > /etc/fail2ban/jail.local
+[DEFAULT]
+enabled = true
+bantime = 86400
+ignoreip = 127.0.0.1 10.0.2.2 24.70.82.157
+EOF
+sudo systemctl restart fail2ban

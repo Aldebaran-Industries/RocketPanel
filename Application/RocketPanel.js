@@ -7,7 +7,7 @@ const cookieParser = require('cookie-parser');
 
 // Create a new express app
 const app = express();
-const port = 80;
+const port = 3000;
 
 // Middleware
 app.use(compression());
