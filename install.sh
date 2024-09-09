@@ -297,4 +297,7 @@ systemctl restart nginx
 # sudo certbot register --update-registration --email yournewemail@example.com
 # sudo certbot -a dns-cloudflare -i nginx -d "*.domain.com" -d "*.server.domain.com" --dns-cloudflare-credentials /etc/ssl/cloudflare.ini --dry-run
 
-Set the 'ServerName' directive globally to suppress this message
+# Set the 'ServerName' directive globally to suppress this message
+
+# cd /var/www/RocketPanel
+# node /var/www/RocketPad/Application/RocketPanel.js &
