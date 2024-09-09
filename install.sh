@@ -25,9 +25,40 @@ echo "Installing basic system dependencies..."
 sudo apt install -y ufw fail2ban openssh-server
 check_status "installing basic system dependencies"
 
+# Fail2Ban Settings
+cat <<EOF > /etc/fail2ban/jail.local
+[DEFAULT]
+enabled = true
+bantime = 86400
+ignoreip = 127.0.0.1 10.0.2.2 24.70.82.157
+EOF
+sudo systemctl restart fail2ban
+
 # Configure UFW firewall
 echo "Configuring UFW Firewall..."
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
 sudo ufw allow OpenSSH
+sudo ufw allow 21/tcp
+sudo ufw allow 22/tcp
+sudo ufw allow 25/tcp
+sudo ufw allow 53/tcp
+sudo ufw allow 53/udp
+sudo ufw allow 80/tcp
+sudo ufw allow 110/tcp
+sudo ufw allow 143/tcp
+sudo ufw allow 443/tcp
+sudo ufw allow 587/tcp
+sudo ufw allow 993/tcp
+sudo ufw allow 995/tcp
+sudo ufw allow 3000/tcp
+sudo ufw allow 3306/tcp
+sudo ufw allow 3333/tcp
+sudo ufw allow 5432/tcp
+sudo ufw allow 8080/tcp
+sudo ufw allow 8443/tcp
+sudo ufw allow 9999/tcp
+sudo ufw allow 10000/tcp
 sudo ufw enable
 check_status "configuring UFW"
 
@@ -84,9 +115,18 @@ check_status "installing PostgreSQL"
 
 # Install phpMyAdmin
 # server, 
-# echo "Installing phpMyAdmin..."
+echo "Installing phpMyAdmin..."
+# Set pre-seed values for phpMyAdmin
+echo "phpmyadmin phpmyadmin/dbconfig-install boolean true" | sudo debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/admin-pass password RocketPanel" | sudo debconf-set-selections
+echo "phpmyadmin phpmyadmin/mysql/app-pass password RocketPanel" | sudo debconf-set-selections
+echo "phpmyadmin phpmyadmin/app-password-confirm password RocketPanel" | sudo debconf-set-selections
+echo "phpmyadmin phpmyadmin/reconfigure-webserver multiselect apache2" | sudo debconf-set-selections
+# Install phpMyAdmin
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y phpmyadmin
 # sudo apt install -y phpmyadmin
-# check_status "installing phpMyAdmin"
+check_status "installing phpMyAdmin"
+
 
 # Install FTP server
 echo "Installing FTP server..."
@@ -94,19 +134,24 @@ sudo apt install -y vsftpd
 check_status "installing FTP server"
 
 # Install Postfix and Dovecot for email
-# echo "Installing Postfix and Dovecot..."
+echo "Installing Postfix and Dovecot..."
 # sudo apt install -y postfix dovecot-core dovecot-imapd dovecot-pop3d
-# check_status "installing Postfix and Dovecot"
+Set pre-seed values for Postfix
+echo "postfix postfix/mailname string rocketpanel.ca" | sudo debconf-set-selections
+echo "postfix postfix/main_mailer_type string 'Internet Site'" | sudo debconf-set-selections
+# Install Postfix
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postfix
+check_status "installing Postfix and Dovecot"
 
-# # Install webmail clients
-# echo "Installing Roundcube and Horde..."
-# sudo apt install -y roundcube horde
-# check_status "installing webmail clients"
+# Install webmail clients
+echo "Installing Roundcube and Horde..."
+sudo apt install -y roundcube horde
+check_status "installing webmail clients"
 
-# # Install SpamAssassin
-# echo "Installing SpamAssassin..."
-# sudo apt install -y spamassassin
-# check_status "installing SpamAssassin"
+# Install SpamAssassin
+echo "Installing SpamAssassin..."
+sudo apt install -y spamassassin
+check_status "installing SpamAssassin"
 
 # Install web analytics tools
 echo "Installing Webalizer and AWStats..."
@@ -122,6 +167,22 @@ check_status "installing ClamAV"
 echo "Installing Certbot and Cloudflare DNS plugin..."
 sudo apt install -y certbot python3-certbot-dns-cloudflare
 check_status "installing Certbot and Cloudflare DNS plugin"
+
+# Install SSL for localhost
+echo "Installing SSL for localhost..."
+sudo mkdir /var/www/SSL
+sudo mkdir /var/www/SSL/RocketPanel
+sudo chown root:www-data /var/www/SSL
+sudo chown root:www-data /var/www/SSL/RocketPanel
+sudo chmod 750 /var/www/SSL
+sudo chmod 750 /var/www/SSL/RocketPanel
+# Set up self-signed certificate for 127.0.0.1
+sudo mkdir -p /etc/ssl/selfsigned
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /var/www/SSL/RocketPanel/localhost.key -out /var/www/SSL/RocketPanel/localhost.crt -subj "/CN=127.0.0.1"
+sudo chown root:www-data /var/www/SSL/RocketPanel/localhost.crt
+sudo chown root:www-data /var/www/SSL/RocketPanel/localhost.key
+sudo chmod 640 /var/www/SSL/RocketPanel/localhost.crt
+sudo chmod 640 /var/www/SSL/RocketPanel/localhost.key
 
 # Install Node.js
 echo "Installing Node.js..."
@@ -150,102 +211,46 @@ echo "Installing BIND for DNS..."
 sudo apt install -y bind9
 check_status "installing BIND"
 
-# Install SSL for localhost
-echo "Installing SSL for localhost..."
-sudo mkdir /var/www/SSL
-sudo mkdir /var/www/SSL/RocketPanel
-sudo chown root:www-data /var/www/SSL
-sudo chown root:www-data /var/www/SSL/RocketPanel
-sudo chmod 750 /var/www/SSL
-sudo chmod 750 /var/www/SSL/RocketPanel
-# Set up self-signed certificate for 127.0.0.1
-sudo mkdir -p /etc/ssl/selfsigned
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /var/www/SSL/RocketPanel/localhost.key -out /var/www/SSL/RocketPanel/localhost.crt -subj "/CN=127.0.0.1"
-sudo chown root:www-data /var/www/SSL/RocketPanel/localhost.crt
-sudo chown root:www-data /var/www/SSL/RocketPanel/localhost.key
-sudo chmod 640 /var/www/SSL/RocketPanel/localhost.crt
-sudo chmod 640 /var/www/SSL/RocketPanel/localhost.key
-
-
-
-
-# # Start the RocketPad Node.js application
-# echo "Create the RocketPanel Service"
-# cat <<EOF > /etc/systemd/system/rocketpanel.service
-# [Unit]
-# Description=RocketPanel Node.js Application
-# After=network.target
-
-# [Service]
-# ExecStart=/usr/bin/node /var/www/RocketPanel/Application/RocketPanel.js
-# WorkingDirectory=/var/www/RocketPanel/Application
-# Restart=always
-# User=www-data
-# Group=www-data
-
-# [Install]
-# WantedBy=multi-user.target
-# EOF
-
-# # Reload systemd and start RocketPad service
-# ech "Reload RocketPanel Service..."
-# systemctl daemon-reload
-# systemctl start rocketpanel
-# systemctl enable rocketpanel
-
-# sudo apt-get install -y build-essential libpcre3 libpcre3-dev libssl-dev zlib1g-dev
-# sudo apt-get install libcurl4-openssl-dev 
-# sudo apt-get install -y ruby-dev
-# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 561F9B9CAC40B2F7
-# sudo sh -c 'echo deb https://oss-binaries.phusionpassenger.com/apt/passenger jammy main > /etc/apt/sources.list.d/passenger.list'
-# sudo apt-get update
-# sudo apt-get install -y passenger
-# sudo apt-get install -y passenger-dev
-# git clone https://github.com/phusion/passenger.git
-# cd passenger
-# ./bin/passenger-install-nginx-module
-
-
-# install in /usr/sbin/nginx
-
-
-
-# echo "Installation completed successfully. Please check the log file: $LOGFILE"
-
-# passenger start --port 3000 --app-type node --startup-file /var/www/RocketPanel/Application/RocketPanel.js
-
+# Install Redis
+echo "Installing Redis..."
+sudo apt install -y redis-server
+check_status "Installing Redis"
 
 # Install Node.JS Dependencies
 cd /var/www/RocketPanel
 sudo npm install
 
 # Create the Passenger Service and Start RocketPanel
-echo "Create the Passenger Service"
-cat <<EOF > /etc/systemd/system/passenger.service
+echo "Create the RocketPanel Service"
+cat <<EOF > /etc/systemd/system/rocketpanel.service
 [Unit]
-Description=Phusion Passenger Standalone
+Description=RocketPanel Node.JS Application Server
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/passenger start --port 3000 --app-type node --startup-file /var/www/RocketPanel/Application/RocketPanel.js
-Restart=always
+Type=simple
 User=www-data
 Group=www-data
-Environment=NODE_ENV=production
+WorkingDirectory=/var/www/RocketPanel/Application
+ExecStart=/usr/bin/nodemon RocketPanel.js
+Restart=always
+Environment=PORT=3000
+LimitNOFILE=4096
 
 [Install]
 WantedBy=multi-user.target
 EOF
-sudo systemctl enable passenger
-sudo systemctl start passenger
+systemctl daemon-reload
+sudo systemctl enable rocketpanel
+sudo systemctl start rocketpanel
 # Configure Nginx to serve a Node.js application
 echo "Configuring RocketPanel"
 sudo chown www-data:www-data /var/www/RocketPanel/Application/RocketPanel.js
 sudo chmod 755 /var/www/RocketPanel/Application/RocketPanel.js
 cat <<EOF > /etc/nginx/sites-available/RocketPanel
 server {
+    listen 80;
     listen 443 ssl;
-    server_name 127.0.0.1;
     ssl_certificate /var/www/SSL/RocketPanel/localhost.crt;
     ssl_certificate_key /var/www/SSL/RocketPanel/localhost.key;
 
@@ -266,14 +271,14 @@ systemctl restart nginx
 
 
 # SSL
-echo "Setting up SSL Directories..."
-sudo mkdir /var/www/SSL/LetsEncrypt
-cat <<EOF > /var/www/SSL/LetsEncrypt/set-permissions.sh
-chmod 644 /etc/letsencrypt/live/*/fullchain.pem
-chmod 644 /etc/letsencrypt/live/*/privkey.pem
-chmod 755 /etc/letsencrypt/live
-EOF
-sudo chmod +x /var/www/SSL/LetsEncrypt/set-permissions.sh
+# echo "Setting up SSL Directories..."
+# sudo mkdir /var/www/SSL/LetsEncrypt
+# cat <<EOF > /var/www/SSL/LetsEncrypt/set-permissions.sh
+# chmod 644 /etc/letsencrypt/live/*/fullchain.pem
+# chmod 644 /etc/letsencrypt/live/*/privkey.pem
+# chmod 755 /etc/letsencrypt/live
+# EOF
+# sudo chmod +x /var/www/SSL/LetsEncrypt/set-permissions.sh
 
 
 # sudo ln -s /path/to/new/certificates/live/aldebaran.host-0001 /etc/letsencrypt/live/aldebaran.host-0001
@@ -285,10 +290,3 @@ sudo chmod +x /var/www/SSL/LetsEncrypt/set-permissions.sh
 # sudo certbot register --update-registration --email yournewemail@example.com
 # sudo certbot -a dns-cloudflare -i nginx -d "*.domain.com" -d "*.server.domain.com" --dns-cloudflare-credentials /etc/ssl/cloudflare.ini --dry-run
 
-cat <<EOF > /etc/fail2ban/jail.local
-[DEFAULT]
-enabled = true
-bantime = 86400
-ignoreip = 127.0.0.1 10.0.2.2 24.70.82.157
-EOF
-sudo systemctl restart fail2ban
