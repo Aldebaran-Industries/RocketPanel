@@ -144,9 +144,9 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y postfix
 check_status "installing Postfix and Dovecot"
 
 # Install webmail clients
-echo "Installing Roundcube..."
-sudo apt install -y roundcube
-check_status "installing webmail clients"
+# echo "Installing Roundcube and Horde..."
+# sudo apt install -y roundcube horde
+# check_status "installing webmail clients"
 
 # Install SpamAssassin
 echo "Installing SpamAssassin..."
