@@ -18,6 +18,14 @@ app.set('trust proxy', true);
 
 // Routes
 app.get('*', (request, response, next) => {
+    // Check if the installation was successful- if not then start the installation.
+    // If the installation was successful, return a success message.
+    // TODO: Implement logic to check for installation success. For now, always return a success message.
+    // Example:
+    // const installationSuccessful = await checkInstallationSuccess();
+    // if (!installationSuccessful) {
+    //     startInstallation();
+    // }
     response.status(200).json({
         status: 200,
         message: 'OK',
