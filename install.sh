@@ -271,8 +271,6 @@ EOF
 
 # Enable and restart Nginx
 echo "Restarting NGINX Server..."
-sudo rm /etc/nginx/sites-enabled/default
-sudo rm /etc/nginx/sites-available/default
 ln -s /etc/nginx/sites-available/RocketPanel /etc/nginx/sites-enabled/
 systemctl restart nginx
 
