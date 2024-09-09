@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "RocketPanel is a simple http web server that allows resellers and clients to host and manage their web applications",
     "author": "Aldebaran Industries Inc.",
-    "license": "MIT",
+    "license": "GNU AGPL",
     "scripts": {
         "start": "nodemon Application/LuckyDuck.js",
         "dev": "nodemon Application/LuckyDuck.js"
