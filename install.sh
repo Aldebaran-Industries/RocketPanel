@@ -219,6 +219,8 @@ check_status "Installing Redis"
 # Install Node.JS Dependencies
 cd /var/www/RocketPanel
 sudo npm install
+cd
+sudo npm install -g nodemon
 
 # Create the Passenger Service and Start RocketPanel
 echo "Create the RocketPanel Service"
@@ -232,7 +234,7 @@ Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/RocketPanel/
-ExecStart=/usr/bin/node /var/www/RocketPanel/Application/RocketPanel.js
+ExecStart=/usr/bin/nodemon /var/www/RocketPanel/Application/RocketPanel.js
 Restart=always
 Environment=PORT=3000
 
@@ -300,5 +302,5 @@ systemctl restart nginx
 # cd /var/www/RocketPanel
 # node /var/www/RocketPad/Application/RocketPanel.js &
 
-sudo npm install -g nodemon
-nodemon /var/www/RocketPanel/Application/RocketPanel.js
+
+

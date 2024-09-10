@@ -16,6 +16,7 @@
       "compression": "*",
       "cookie-parser": "*",
       "debug": "*",
+      "ejs": "*",
       "express": "*",
       "express-rate-limit": "*",
       "express-session": "*",
