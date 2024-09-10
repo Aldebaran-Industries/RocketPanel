@@ -4,6 +4,7 @@
 const express = require('express');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 // Create a new express app
 const app = express();
@@ -37,6 +38,12 @@ app.get('*', (request, response, next) => {
     //         message: 'RocketPanel is preparing to LAUNCH!'
     //     }
     // });
+});
+
+// Error handling middleware
+app.use((error, request, response, next) => {
+    console.error(error.stack);
+    response.status(500).send(`Something went wrong!<br><pre>${error.stack}</pre>`);
 });
 
 

@@ -299,3 +299,6 @@ systemctl restart nginx
 
 # cd /var/www/RocketPanel
 # node /var/www/RocketPad/Application/RocketPanel.js &
+
+sudo npm install -g nodemon
+nodemon /var/www/RocketPanel/Application/RocketPanel.js
