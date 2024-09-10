@@ -30,6 +30,7 @@
       "passport-local": "*",
       "public-ip": "*",
       "pug": "*",
+      "sass": "*",
       "serve-favicon": "*",
       "uuid": "*",
       "winston": "*",

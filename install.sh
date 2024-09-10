@@ -232,7 +232,7 @@ Type=simple
 User=www-data
 Group=www-data
 WorkingDirectory=/var/www/RocketPanel/
-ExecStart=/usr/bin/npm start
+ExecStart=/usr/bin/node /var/www/RocketPanel/Application/RocketPanel.js
 Restart=always
 Environment=PORT=3000
 
